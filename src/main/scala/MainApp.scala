@@ -1,7 +1,10 @@
 import java.net.{ServerSocket, Socket}
-import java.io.{DataInputStream, DataOutputStream}
+import java.io.{DataInputStream, DataOutputStream, ObjectOutputStream}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.collection.mutable.ArrayBuffer
+
+class Item(val name: String, val price: Int)
 
 object MainApp extends App {
     val serverSocket = new ServerSocket(5555)
@@ -9,27 +12,57 @@ object MainApp extends App {
     // receive connections
     val incomingSocket: Future[Socket] = Future { serverSocket.accept() }
 
+    val items: ArrayBuffer[Item] = ArrayBuffer(
+        new Item("horseraddish", 420),
+        new Item("eggplant", 380),
+        new Item("lentil", 750),
+        new Item("potato", 169),
+    )
+
     def processSocket(socket: Socket) {
         val nextIncomingSocket: Future[Socket] = Future { serverSocket.accept() }
         nextIncomingSocket.foreach(socket => {
             processSocket(socket)
         })
 
-        val instream = socket.getInputStream()
-        val outstream = socket.getOutputStream()
+        val in = socket.getInputStream()
+        val out = socket.getOutputStream()
 
-        val dis = new DataInputStream(instream)
-        val dos = new DataOutputStream(outstream)
+        val dis = new DataInputStream(in)
+        val dos = new DataOutputStream(out)
+        val oos = new ObjectOutputStream(out)
 
+
+        // get array of item names
+        val itemNames: ArrayBuffer[String] = ArrayBuffer[String]()
+        for (item <- items) {
+            itemNames.append(item.name)
+        }
+
+        // send array of item names
+        oos.writeObject(itemNames)
+
+        // data is the item name
         val data = dis.readLine()
         println(s"Received data from client: ${data}")
-        dos.writeBytes(s"Hello, ${data}\n")
 
+        // get price
+        var price = "Item does not exist."
+        if (itemNames.contains(data)) {
+            price = items.filter(_.name==data)(0).price.toString
+        }
+
+        // send price
+        dos.writeBytes(price)
+        // for some reason flush does not send this output stream
+        // dos.flush()
+        // but close does
+        dos.close()
     }
 
     incomingSocket.foreach(socket => {
             processSocket(socket)
         })
 
-    scala.io.StdIn.readLine("Press Enter key to terminate server")
+    scala.io.StdIn.readLine("Press Enter key to terminate server\n")
 }
