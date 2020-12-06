@@ -64,5 +64,21 @@ object MainApp extends App {
             processSocket(socket)
         })
 
-    scala.io.StdIn.readLine("Press Enter key to terminate server\n")
+    // initialise input
+    var input: String = ""
+    // add item or terminate server
+    do {
+        input = scala.io.StdIn.readLine("Enter item name to add item or 'q' to terminate server: \n").toLowerCase()
+        if (input != "q") {
+            val price: String = scala.io.StdIn.readLine("Enter item price in sen: \n")
+            try {
+                items.append(new Item(input, price.toInt))
+            } catch {
+                case e: Exception => println("Item price must be integer.")
+            }
+            println("")
+        }
+        
+    } while(input != "q")
+
 }
