@@ -13,10 +13,10 @@ object MainApp extends App {
     val incomingSocket: Future[Socket] = Future { serverSocket.accept() }
 
     val items: ArrayBuffer[Item] = ArrayBuffer(
-        new Item("horseraddish", 420),
-        new Item("eggplant", 380),
-        new Item("lentil", 750),
-        new Item("potato", 169),
+        new Item("Horseraddish", 420),
+        new Item("Eggplant", 380),
+        new Item("Lentil", 750),
+        new Item("Potato", 169),
     )
 
     def processSocket(socket: Socket) {
@@ -68,9 +68,9 @@ object MainApp extends App {
     var input: String = ""
     // add item or terminate server
     do {
-        input = scala.io.StdIn.readLine("Enter item name to add item or 'q' to terminate server: \n").toLowerCase()
+        input = scala.io.StdIn.readLine("Enter item NAME to add item (or 'q' to terminate server): \n").toLowerCase()
         if (input != "q") {
-            val price: String = scala.io.StdIn.readLine("Enter item price in sen: \n")
+            val price: String = scala.io.StdIn.readLine("Enter item PRICE in cents (or press Enter to cancel): \n")
             try {
                 items.append(new Item(input, price.toInt))
             } catch {
