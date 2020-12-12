@@ -68,7 +68,7 @@ object MainApp extends App {
     var input: String = ""
     // add item or terminate server
     do {
-        input = scala.io.StdIn.readLine("Enter item NAME to add item (or 'q' to terminate server): \n").toLowerCase()
+        input = scala.io.StdIn.readLine("Enter item NAME to add item (or 'q' to terminate server): \n")
         if (input != "q") {
             val price: String = scala.io.StdIn.readLine("Enter item PRICE in cents (or press Enter to cancel): \n")
             try {
