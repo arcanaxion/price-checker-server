@@ -34,10 +34,7 @@ object MainApp extends App {
 
 
         // get array of item names
-        val itemNames: ArrayBuffer[String] = ArrayBuffer[String]()
-        for (item <- items) {
-            itemNames.append(item.name)
-        }
+        val itemNames: ArrayBuffer[String] = items.map(_.name)
 
         // send array of item names
         oos.writeObject(itemNames)
